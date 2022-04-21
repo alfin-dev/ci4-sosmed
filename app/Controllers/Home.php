@@ -28,11 +28,13 @@ class Home extends BaseController
         return view('dashboard', $data);
     }
 
+    //create data postingan
     public function create()
     {
-        $foto = $dataBerkas = $this->request->getFile('foto');
-        $video = $dataBerkas = $this->request->getFile('video');
+        $foto = $dataBerkas = $this->request->getFile('foto'); //cek post foto
+        $video = $dataBerkas = $this->request->getFile('video'); //cek post video
 
+        //post with video & foto
         if ($foto->getName() != null && $video->getName() != null) {
             $dataBerkasfoto = $this->request->getFile('foto');
             $dataBerkasvid = $this->request->getFile('video');
@@ -49,6 +51,7 @@ class Home extends BaseController
             $dataBerkasfoto->move('uploads/berkas/', $fileNamefoto);
             $dataBerkasvid->move('uploads/berkas/', $fileNamevid);
         }
+
         //foto only
         elseif ($foto->getname() != null) {
             $dataBerkas = $this->request->getFile('foto');
@@ -75,7 +78,10 @@ class Home extends BaseController
                 'vid'        => $fileName,
             ]);
             $dataBerkas->move('uploads/berkas/', $fileName);
-        } else {
+        }
+
+        //text only
+        else {
             $id = user()->getIduser();
             $this->tposts->insert([
                 'userid'        => $id,
@@ -86,6 +92,7 @@ class Home extends BaseController
         return redirect('dashboard');
     }
 
+    //create comment
     public function createcomment()
     {
         $komentar = $this->request->getPost('komentar');
@@ -102,6 +109,7 @@ class Home extends BaseController
         return redirect('dashboard');
     }
 
+    //create like
     public function createlike()
     {
         $idpost = $this->request->getPost('id');
@@ -112,13 +120,17 @@ class Home extends BaseController
 
         // dd($idlike);
 
+        //jika tidak ada like, menambah like
         if ($getlike == null) {
             $this->tlike->insert([
                 'postid' => $idpost,
                 'userid' => $iduser,
                 'like' => 1,
             ]);
-        } else {
+        }
+
+        //jika ada like, dipencet like akan remove like
+        else {
             foreach ($getlike as $k) {
                 $idlike = $k['id'];
             }
