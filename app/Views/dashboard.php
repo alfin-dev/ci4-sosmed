@@ -216,7 +216,6 @@
                     <?php } ?>
 
                     <div class="post__image">
-
                         <?php if ($p['vid'] != null) { ?>
                             <video controls>
                                 <source src="<?= base_url() . "/uploads/berkas/" . $p['vid']; ?>" type="video/webm" />
@@ -230,7 +229,6 @@
                         <?php } ?>
                     </div>
 
-
                     <form action="<?php echo site_url('createlike') ?>" method="POST">
                         <input type="hidden" value="<?php echo $p['id']; ?>" name="id">
                         <input type="hidden" value="<?= user()->getIduser(); ?>" name="iduser">
@@ -238,9 +236,8 @@
                         <div class="post__options">
                             <div class="post__option">
                                 <span class="material-icons"> thumb_up </span>
-                                <!-- <p>Like</p>
-                             -->
                                 <?php
+                                // fungsi hitung like
                                 $like = $db->table('tlike')
                                     ->join('tposts', 'tlike.postid=tposts.id')
                                     ->where('tposts.id', $p['id'])
@@ -253,19 +250,14 @@
                                 $liked = $db->table('tlike')
                                     ->join('users', 'users.id=tlike.userid')
                                     ->join('tposts', 'tlike.postid=tposts.id')
-                                    ->where(
-                                        'tlike.userid',
-                                        $userid
-                                    )
+                                    ->where('tlike.userid', $userid)
                                     ->where('tlike.postid', $p['id'])
                                     ->select('tlike.id,users.username')
                                     ->get()->getResultArray();
-                                // d($liked);
 
                                 if (count($liked)) {
                                 ?>
                                     <button type="submit" class="btn btn-sm" style="background-color: transparent;">Liked</button>
-
                                 <?php
                                 } else {
                                 ?>
@@ -274,45 +266,39 @@
                             </div>
                     </form>
 
+                    <!-- form create komentar -->
                     <form id="myForm" action="<?php echo site_url('createcomment') ?>" method="POST">
                         <input type="hidden" value="<?php echo $p['id']; ?>" name="id">
                         <input type="hidden" value="<?= user()->getIduser(); ?>" name="iduser">
                         <div class="post__option">
                             <div class="post__option">
                                 <span class="material-icons"> chat_bubble_outline </span>
-                                <!-- <p>Comment</p> -->
                                 <input name="komentar" id="komentar" class="messageSender__input" placeholder="Write comment here" type="text" />
                             </div>
-
                             <button type="submit" class="btn btn-sm" style="background-color: transparent;">
                                 <div class="post__option">
                                     <span class=" material-icons"> near_me </span>
                                     Send
-                                    <!-- <p>Send</p> -->
                                 </div>
                             </button>
                         </div>
                     </form>
                 </div>
                 <?php
+                // Komentar pada postingan
                 $content_id = $p['id'];
-                // $query = $db->query("SELECT * FROM komentar WHERE postid = '$content_id'");
                 $result = $db->table('komentar')
                     ->join('users', 'users.id=komentar.userid')
                     ->select('komentar.*,users.username')
                     ->where('komentar.postid', $content_id)
-                    // ->orderBy('tposts.created_at', 'DESC')
+                    ->orderBy('komentar.created_at', 'DESC')
                     ->get()->getResultArray();
-                // $query = $db->query('YOUR QUERY');
-                //you get result as an array in here but fetch your result however you feel to
-                // $result = $query->getResultArray();
-                foreach ($result as $utama) :
-                ?>
-                    <p style="line-height: 1px;"><b><?= $utama['username'] ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; : </b><?= $utama['komentar'] ?></p>
-                    <p style="font-size: 10px; line-height: 1px;"><?= $utama['created_at'] ?></p>
+
+                foreach ($result as $komentar) : ?>
+                    <p style="line-height: 1px;"><b><?= $komentar['username'] ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; : </b><?= $komentar['komentar'] ?></p>
+                    <p style="font-size: 10px; line-height: 1px;"><?= $komentar['created_at'] ?></p>
                     <br>
-                <?php endforeach;
-                ?>
+                <?php endforeach; ?>
         </div>
     <?php endforeach; ?>
     </div>
@@ -331,9 +317,7 @@
     </div>
     </div>
     <!-- main body ends -->
-
     <div id="fb-root"></div>
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v10.0" nonce="zUxEq08J"></script>
 </body>
-
 </html>
